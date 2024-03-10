@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const serverless = require('serverless-http')
 const axios = require('axios');
+const cors = require("cors");
 
 const app = express();
 const router = express.Router();
@@ -77,7 +78,7 @@ function calculateGoldDifference(participantFrames) {
   return sumFirstFive - sumLastFive;
 }
 
-router.get('/:region/summoner/:userId', async (req, res) => {
+router.get('/:region/summoner/:userId', cors() ,async (req, res) => {
   try {
     const nick = req.params.userId.split("+").join('/');
     const region = req.params.region
@@ -103,7 +104,7 @@ router.get('/:region/summoner/:userId', async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 })
-router.get('/:region/match/:id', async (req, res) => {
+router.get('/:region/match/:id', cors(), async (req, res) => {
   try {
     const matchId = req.params.id
     const region = req.params.region
@@ -125,24 +126,6 @@ router.get('/:region/match/:id', async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 })
-router.get('/demo', (req, res) => {
-  res.json([
-    {
-      id: '001',
-      name: 'Smith',
-      email: 'smith@gmail.com',
-    },
-    {
-      id: '002',
-      name: 'Sam',
-      email: 'sam@gmail.com',
-    },
-    {
-      id: '003',
-      name: 'lily',
-      email: 'lily@gmail.com',
-    },
-  ]);
-});
+
 app.use('/.netlify/functions/api', router);
 module.exports.handler = serverless(app);
